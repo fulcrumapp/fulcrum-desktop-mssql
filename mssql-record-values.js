@@ -1,4 +1,4 @@
-import pgformat from 'pg-format';
+import { format } from 'util';
 import { RecordValues } from 'fulcrum';
 
 export default class MSSQLRecordValues extends RecordValues {
@@ -12,7 +12,7 @@ export default class MSSQLRecordValues extends RecordValues {
   }
 
   static setupPoint(values, latitude, longitude) {
-    const wkt = pgformat('POINT(%s %s)', longitude, latitude);
+    const wkt = format('POINT(%s %s)', longitude, latitude);
     return {raw: `geography::STGeomFromText('${ wkt }', 4326)`};
   }
 }
