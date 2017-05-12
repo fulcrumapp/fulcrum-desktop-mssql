@@ -1,0 +1,36 @@
+{
+  "name": "fulcrum-desktop-mssql",
+  "version": "1.0.0",
+  "main": "dist/plugin.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "node_modules/.bin/babel *.js --out-dir dist --source-maps=inline",
+    "watch": "node_modules/.bin/babel *.js --out-dir dist --source-maps=inline --watch",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "fulcrum-desktop-plugin": "^1.4.0",
+    "fulcrum-schema": "fulcrumapp/fulcrum-schema#v2",
+    "mssql": "^4.0.4"
+  },
+  "babel": {
+    "plugins": [
+      "fulcrum-desktop"
+    ],
+    "presets": [
+      "stage-0",
+      [
+        "env",
+        {
+          "targets": {
+            "node": "current"
+          }
+        }
+      ]
+    ]
+  },
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-plugin-fulcrum-desktop": "^1.0.0"
+  }
+}
