@@ -28,7 +28,8 @@ Schema.systemFormTableColumns = [
     type: 'string'
   }, {
     name: 'status',
-    type: 'string'
+    type: 'string',
+    length: 100
   }, {
     name: 'latitude',
     type: 'double'
@@ -157,17 +158,21 @@ Schema.systemValuesTableColumns = [
     allowNull: false
   }, {
     name: 'record_resource_id',
-    type: 'string'
+    type: 'string',
+    length: 100
   }, {
     name: 'parent_resource_id',
-    type: 'string'
+    type: 'string',
+    length: 100
   }, {
     name: 'key',
     type: 'string',
-    allowNull: false
+    allowNull: false,
+    length: 100
   }, {
     name: 'text_value',
-    type: 'string'
+    type: 'string',
+    length: 500
   }, {
     name: 'number_value',
     type: 'double'
@@ -207,7 +212,8 @@ Schema.systemRepeatableTableColumns = [
     type: 'string'
   }, {
     name: 'record_status',
-    type: 'string'
+    type: 'string',
+    length: 100
   }, {
     name: 'index', // TODO(zhm) make this work in the app
     type: 'integer'
@@ -416,8 +422,8 @@ Schema.systemValuesViewColumns = {
 
 Schema.systemFormTableIndexes = [
   { columns: [ 'record_resource_id' ], method: 'btree', unique: true },
-  { columns: [ 'geometry' ], method: 'gist' },
-  { columns: [ 'record_index' ], method: 'gin' },
+  { columns: [ 'geometry' ], method: 'spatial' },
+  // { columns: [ 'record_index' ], method: 'gin' },
   { columns: [ 'status' ], method: 'btree' },
   { columns: [ 'server_updated_at' ], method: 'btree' },
   { columns: [ 'project_resource_id' ], method: 'btree' },
@@ -429,8 +435,8 @@ Schema.systemRepeatableTableIndexes = [
   { columns: [ 'resource_id' ], method: 'btree', unique: true },
   { columns: [ 'record_resource_id' ], method: 'btree' },
   { columns: [ 'parent_resource_id' ], method: 'btree' },
-  { columns: [ 'geometry' ], method: 'gist' },
-  { columns: [ 'record_index' ], method: 'gin' },
+  { columns: [ 'geometry' ], method: 'spatial' },
+  // { columns: [ 'record_index' ], method: 'gin' },
   { columns: [ 'record_status' ], method: 'btree' },
   { columns: [ 'updated_at' ], method: 'btree' },
   { columns: [ 'record_project_resource_id' ], method: 'btree' },

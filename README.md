@@ -8,21 +8,21 @@ Sync Fulcrum data to SQL Server.
 fulcrum install-plugin --url https://github.com/fulcrumapp/fulcrum-desktop-mssql
 ```
 
-### Sync a Form
+### Setup
 
 ```sh
-# Create a database
-./setup-mssql.sh
+# Create the database
+fulcrum mssql --setup --msuser USERNAME --mspassword PASSWORD --mshost HOSTNAME
 ```
 
 ### Sync a Form
 
 ```
-fulcrum mssql --org 'Fulcrum Account Name'
+fulcrum mssql --org 'Fulcrum Account Name' --msuser USERNAME --mspassword PASSWORD --mshost HOSTNAME
 ```
 
 ### Keep it up to date
 
 ```
-fulcrum sync --org 'Fulcrum Account Name'
+fulcrum sync --org 'Fulcrum Account Name' --msuser USERNAME --mspassword PASSWORD --mshost HOSTNAME
 ```

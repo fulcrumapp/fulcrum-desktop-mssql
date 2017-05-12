@@ -2,7 +2,7 @@ import Schema from 'fulcrum-schema/dist/schema';
 import sqldiff from 'sqldiff';
 import MSSQLSchema from './mssql-schema';
 
-const {SchemaDiffer, Postgres} = sqldiff;
+const {SchemaDiffer, MSSQL} = sqldiff;
 
 export default class PostgresSchema {
   static async generateSchemaStatements(account, oldForm, newForm) {
@@ -18,7 +18,7 @@ export default class PostgresSchema {
     }
 
     const differ = new SchemaDiffer(oldSchema, newSchema);
-    const generator = new Postgres(differ, {afterTransform: null});
+    const generator = new MSSQL(differ, {afterTransform: null});
 
     generator.tablePrefix = 'account_' + account.rowID + '_';
 

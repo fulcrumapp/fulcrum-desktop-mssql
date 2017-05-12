@@ -1029,8 +1029,8 @@ fulcrum-desktop-plugin@^1.4.0:
     babel-preset-stage-0 "^6.24.1"
 
 fulcrum-schema@fulcrumapp/fulcrum-schema#v2:
-  version "1.14.0"
-  resolved "https://codeload.github.com/fulcrumapp/fulcrum-schema/tar.gz/0f03b75583d254828746714d3fd3a5320dc27376"
+  version "1.16.0"
+  resolved "https://codeload.github.com/fulcrumapp/fulcrum-schema/tar.gz/7c4b7adc811a82c003636731b8d55d04993b2565"
   dependencies:
     babel-polyfill "^6.9.0"
     sqldiff "0.0.19"
@@ -1677,6 +1677,12 @@ sprintf@0.1.5:
 sqldiff@0.0.19:
   version "0.0.19"
   resolved "https://registry.yarnpkg.com/sqldiff/-/sqldiff-0.0.19.tgz#1e4af586ffff1f88997a9010d52177dae2506192"
+  dependencies:
+    underscore "^1.7.0"
+
+sqldiff@^0.0.20:
+  version "0.0.20"
+  resolved "https://registry.yarnpkg.com/sqldiff/-/sqldiff-0.0.20.tgz#1cf99065f741133a21d67d3d1079cb915fd6b3eb"
   dependencies:
     underscore "^1.7.0"
 

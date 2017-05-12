@@ -11,7 +11,8 @@
   "dependencies": {
     "fulcrum-desktop-plugin": "^1.4.0",
     "fulcrum-schema": "fulcrumapp/fulcrum-schema#v2",
-    "mssql": "^4.0.4"
+    "mssql": "^4.0.4",
+    "sqldiff": "^0.0.20"
   },
   "babel": {
     "plugins": [
