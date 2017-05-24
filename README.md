@@ -12,7 +12,7 @@ fulcrum install-plugin --url https://github.com/fulcrumapp/fulcrum-desktop-mssql
 
 ```sh
 # Create the database
-fulcrum mssql --setup --msuser USERNAME --mspassword PASSWORD --mshost HOSTNAME
+fulcrum mssql --setup --org "Fulcrum Account Name" --msuser USERNAME --mspassword PASSWORD --mshost "localhost"
 ```
 
 ### Sync a Form
