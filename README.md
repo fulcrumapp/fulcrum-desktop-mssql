@@ -2,13 +2,22 @@
 
 Sync Fulcrum data to SQL Server.
 
-### Installation
+### Initial setup
+
+Setup and sync Desktop first
+```sh
+cd AppData\Local\Programs\Fulcrum\scripts
+fulcrum.cmd setup --email EMAIL --password SECRET
+fulcrum.cmd sync --org "Organization Name"
+```
+
+### Install plugin
 
 ```sh
 fulcrum install-plugin --url https://github.com/fulcrumapp/fulcrum-desktop-mssql
 ```
 
-### Setup
+### Setup plugin
 
 ```sh
 # Create the database
