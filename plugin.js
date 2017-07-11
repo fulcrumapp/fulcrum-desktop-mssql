@@ -18,30 +18,30 @@ export default class {
       command: 'mssql',
       desc: 'run the MSSQL sync for a specific organization',
       builder: {
-        msdatabase: {
+        msDatabase: {
           desc: 'mssql database name',
           type: 'string',
           default: MSSQL_CONFIG.database
         },
-        mshost: {
+        msHost: {
           desc: 'mssql server host',
           type: 'string',
           default: MSSQL_CONFIG.host
         },
-        msport: {
+        msPort: {
           desc: 'mssql server port',
           type: 'integer',
           default: MSSQL_CONFIG.port
         },
-        msuser: {
+        msUser: {
           desc: 'mssql user',
           type: 'string'
         },
-        mspassword: {
+        msPassword: {
           desc: 'mssql password',
           type: 'string'
         },
-        msschema: {
+        msSchema: {
           desc: 'mssql schema',
           type: 'string'
         },
@@ -61,7 +61,7 @@ export default class {
 
   runCommand = async () => {
     if (fulcrum.args.setup) {
-      await this.createDatabase(fulcrum.args.msdatabase || 'fulcrumapp');
+      await this.createDatabase(fulcrum.args.msDatabase || 'fulcrumapp');
       return;
     }
 
@@ -102,7 +102,7 @@ export default class {
     // of applying a schema diff.
     const rows = await this.run("SELECT table_name AS name FROM information_schema.tables WHERE table_schema='dbo'");
 
-    this.dataSchema = fulcrum.args.msschema || 'dbo';
+    this.dataSchema = fulcrum.args.msSchema || 'dbo';
     this.tableNames = rows.map(o => o.name);
 
     // make a client so we can use it to build SQL statements
@@ -287,22 +287,22 @@ export default class {
   get connectionOptions() {
     const options = {
       ...MSSQL_CONFIG,
-      server: fulcrum.args.mshost || MSSQL_CONFIG.host,
-      port: fulcrum.args.msport || MSSQL_CONFIG.port,
-      database: fulcrum.args.msdatabase || MSSQL_CONFIG.database,
-      user: fulcrum.args.msuser || MSSQL_CONFIG.user,
-      password: fulcrum.args.mspassword || MSSQL_CONFIG.password,
+      server: fulcrum.args.msHost || MSSQL_CONFIG.host,
+      port: fulcrum.args.msPort || MSSQL_CONFIG.port,
+      database: fulcrum.args.msDatabase || MSSQL_CONFIG.database,
+      user: fulcrum.args.msUser || MSSQL_CONFIG.user,
+      password: fulcrum.args.msPassword || MSSQL_CONFIG.password,
       options: {
         encrypt: true // Use this if you're on Windows Azure
       }
     };
 
-    if (fulcrum.args.msuser) {
-      options.user = fulcrum.args.msuser;
+    if (fulcrum.args.msUser) {
+      options.user = fulcrum.args.msUser;
     }
 
-    if (fulcrum.args.mspassword) {
-      options.password = fulcrum.args.mspassword;
+    if (fulcrum.args.msPassword) {
+      options.password = fulcrum.args.msPassword;
     }
 
     return options;
