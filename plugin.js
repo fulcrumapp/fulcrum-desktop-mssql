@@ -45,6 +45,10 @@ export default class {
           desc: 'mssql schema',
           type: 'string'
         },
+        msConnectionString: {
+          desc: 'mssql connection string',
+          type: 'string'
+        },
         setup: {
           desc: 'setup the database',
           type: 'boolean'
@@ -285,6 +289,10 @@ export default class {
   }
 
   get connectionOptions() {
+    if (fulcrum.args.msConnectionString) {
+      return fulcrum.args.msConnectionString;
+    }
+
     const options = {
       ...MSSQL_CONFIG,
       server: fulcrum.args.msHost || MSSQL_CONFIG.host,
