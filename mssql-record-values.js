@@ -1,12 +1,16 @@
 import { format } from 'util';
 import { RecordValues } from 'fulcrum';
+import { compact } from 'lodash';
 
 export default class MSSQLRecordValues extends RecordValues {
   static setupSearch(values, feature) {
     const searchableValue = feature.searchableValue;
 
     values.record_index_text = searchableValue;
-    values.record_index = searchableValue; //{raw: `to_tsvector(${ pgformat('%L', searchableValue) })`};
+
+    const strings = compact(feature.formValues.all.map(o => o.searchableValue && o.searchableValue.trim()));
+
+    values.record_index = JSON.stringify(strings);
 
     return values;
   }
