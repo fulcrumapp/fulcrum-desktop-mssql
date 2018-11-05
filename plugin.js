@@ -671,7 +671,7 @@ ${ ex.stack }
 
     const objectName = [prefix, name].join(' - ');
 
-    return this.trimIdentifier(fulcrum.args.mssqlUnderscoreNames ? snake(objectName) : objectName);
+    return this.trimIdentifier(fulcrum.args.mssqlUnderscoreNames !== false ? snake(objectName) : objectName);
   }
 
   async invokeBeforeFunction() {
