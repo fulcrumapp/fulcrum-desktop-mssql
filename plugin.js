@@ -731,8 +731,7 @@ ${ ex.stack }
     for (const viewName of remove) {
       if (viewName.indexOf('view_') === 0 || viewName.indexOf('view - ') === 0) {
         try {
-          console.log(format('DROP VIEW IF EXISTS %s.%s;', this.escapeIdentifier(this.viewSchema), this.escapeIdentifier(viewName)));
-          // await this.run(format('DROP VIEW IF EXISTS %s.%s;', this.escapeIdentifier(this.viewSchema), this.escapeIdentifier(viewName)));
+          await this.run(format('DROP VIEW IF EXISTS %s.%s;', this.escapeIdentifier(this.viewSchema), this.escapeIdentifier(viewName)));
         } catch (ex) {
           this.integrityWarning(ex);
         }
