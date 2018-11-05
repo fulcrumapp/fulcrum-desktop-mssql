@@ -13,7 +13,7 @@ import version001 from './version-001.sql';
 import version002 from './version-002.sql';
 import version003 from './version-003.sql';
 
-const MAX_IDENTIFIER_LENGTH = 63;
+const MAX_IDENTIFIER_LENGTH = 100;
 
 const MSSQL_CONFIG = {
   database: 'fulcrumapp',
