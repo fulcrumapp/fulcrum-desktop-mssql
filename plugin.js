@@ -35,51 +35,51 @@ export default class {
       command: 'mssql',
       desc: 'run the mssql sync for a specific organization',
       builder: {
-        msConnectionString: {
+        mssqlConnectionString: {
           desc: 'mssql connection string (overrides all individual database connection parameters)',
           type: 'string'
         },
-        msDatabase: {
+        mssqlDatabase: {
           desc: 'mssql database name',
           type: 'string',
           default: MSSQL_CONFIG.database
         },
-        msHost: {
+        mssqlHost: {
           desc: 'mssql server host',
           type: 'string',
           default: MSSQL_CONFIG.host
         },
-        msPort: {
+        mssqlPort: {
           desc: 'mssql server port',
           type: 'integer',
           default: MSSQL_CONFIG.port
         },
-        msUser: {
+        mssqlUser: {
           desc: 'mssql user',
           type: 'string'
         },
-        msPassword: {
+        mssqlPassword: {
           desc: 'mssql password',
           type: 'string'
         },
-        msSchema: {
+        mssqlSchema: {
           desc: 'mssql schema',
           type: 'string'
         },
-        msSchemaViews: {
+        mssqlSchemaViews: {
           desc: 'mssql schema for the friendly views',
           type: 'string'
         },
-        msSyncEvents: {
+        mssqlSyncEvents: {
           desc: 'add sync event hooks',
           type: 'boolean',
           default: true
         },
-        msBeforeFunction: {
+        mssqlBeforeFunction: {
           desc: 'call this function before the sync',
           type: 'string'
         },
-        msAfterFunction: {
+        mssqlAfterFunction: {
           desc: 'call this function after the sync',
           type: 'string'
         },
@@ -88,47 +88,47 @@ export default class {
           required: true,
           type: 'string'
         },
-        msForm: {
+        mssqlForm: {
           desc: 'the form ID to rebuild',
           type: 'string'
         },
-        msReportBaseUrl: {
+        mssqlReportBaseUrl: {
           desc: 'report URL base',
           type: 'string'
         },
-        msMediaBaseUrl: {
+        mssqlMediaBaseUrl: {
           desc: 'media URL base',
           type: 'string'
         },
-        msUnderscoreNames: {
+        mssqlUnderscoreNames: {
           desc: 'use underscore names (e.g. "Park Inspections" becomes "park_inspections")',
           required: false,
           type: 'boolean',
           default: false
         },
-        msRebuildViewsOnly: {
+        mssqlRebuildViewsOnly: {
           desc: 'only rebuild the views',
           required: false,
           type: 'boolean',
           default: false
         },
-        msCustomModule: {
+        mssqlCustomModule: {
           desc: 'a custom module to load with sync extensions (experimental)',
           required: false,
           type: 'string'
         },
-        msSetup: {
+        mssqlSetup: {
           desc: 'setup the database',
           required: false,
           type: 'boolean'
         },
-        msDrop: {
+        mssqlDrop: {
           desc: 'drop the system tables',
           required: false,
           type: 'boolean',
           default: false
         },
-        msSystemTablesOnly: {
+        mssqlSystemTablesOnly: {
           desc: 'only create the system records',
           required: false,
           type: 'boolean',
@@ -142,12 +142,22 @@ export default class {
   runCommand = async () => {
     await this.activate();
 
-    if (fulcrum.args.msDrop) {
+    if (fulcrum.args.mssqlCreateDatabase) {
+      await this.createDatabase(fulcrum.args.mssqlCreateDatabase);
+      return;
+    }
+
+    if (fulcrum.args.mssqlDropDatabase) {
+      await this.dropDatabase(fulcrum.args.mssqlDropDatabase);
+      return;
+    }
+
+    if (fulcrum.args.mssqlDrop) {
       await this.dropSystemTables();
       return;
     }
 
-    if (fulcrum.args.msSetup) {
+    if (fulcrum.args.mssqlSetup) {
       await this.setupDatabase();
       return;
     }
@@ -155,7 +165,7 @@ export default class {
     const account = await fulcrum.fetchAccount(fulcrum.args.org);
 
     if (account) {
-      if (fulcrum.args.msSystemTablesOnly) {
+      if (fulcrum.args.mssqlSystemTablesOnly) {
         await this.setupSystemTables(account);
         return;
       }
@@ -165,11 +175,11 @@ export default class {
       const forms = await account.findActiveForms({});
 
       for (const form of forms) {
-        if (fulcrum.args.msForm && form.id !== fulcrum.args.msForm) {
+        if (fulcrum.args.mssqlForm && form.id !== fulcrum.args.mssqlForm) {
           continue;
         }
 
-        if (fulcrum.args.msRebuildViewsOnly) {
+        if (fulcrum.args.mssqlRebuildViewsOnly) {
           await this.rebuildFriendlyViews(form, account);
         } else {
           await this.rebuildForm(form, account, (index) => {
@@ -191,37 +201,37 @@ export default class {
   }
 
   get useSyncEvents() {
-    return fulcrum.args.msSyncEvents != null ? fulcrum.args.msSyncEvents : true;
+    return fulcrum.args.mssqlSyncEvents != null ? fulcrum.args.mssqlSyncEvents : true;
   }
 
   async activate() {
     const options = {
       ...MSSQL_CONFIG,
-      server: fulcrum.args.msHost || MSSQL_CONFIG.server,
-      port: fulcrum.args.msPort || MSSQL_CONFIG.port,
-      database: fulcrum.args.msDatabase || MSSQL_CONFIG.database,
-      user: fulcrum.args.msUser || MSSQL_CONFIG.user,
-      password: fulcrum.args.msPassword || MSSQL_CONFIG.user
+      server: fulcrum.args.mssqlHost || MSSQL_CONFIG.server,
+      port: fulcrum.args.mssqlPort || MSSQL_CONFIG.port,
+      database: fulcrum.args.mssqlDatabase || MSSQL_CONFIG.database,
+      user: fulcrum.args.mssqlUser || MSSQL_CONFIG.user,
+      password: fulcrum.args.mssqlPassword || MSSQL_CONFIG.user
     };
 
-    if (fulcrum.args.msUser) {
-      options.user = fulcrum.args.msUser;
+    if (fulcrum.args.mssqlUser) {
+      options.user = fulcrum.args.mssqlUser;
     }
 
-    if (fulcrum.args.msPassword) {
-      options.password = fulcrum.args.msPassword;
+    if (fulcrum.args.mssqlPassword) {
+      options.password = fulcrum.args.mssqlPassword;
     }
 
-    if (fulcrum.args.msCustomModule) {
-      this.msCustomModule = require(fulcrum.args.msCustomModule);
-      this.msCustomModule.api = api;
-      this.msCustomModule.app = fulcrum;
+    if (fulcrum.args.mssqlCustomModule) {
+      this.mssqlCustomModule = require(fulcrum.args.mssqlCustomModule);
+      this.mssqlCustomModule.api = api;
+      this.mssqlCustomModule.app = fulcrum;
     }
 
     this.disableArrays = false;
     this.disableComplexTypes = true;
 
-    this.pool = await mssql.connect(fulcrum.args.msConnectionString || options);
+    this.pool = await mssql.connect(fulcrum.args.mssqlConnectionString || options);
 
     if (this.useSyncEvents) {
       fulcrum.on('sync:start', this.onSyncStart);
@@ -252,8 +262,8 @@ export default class {
       fulcrum.on('membership:delete', this.onMembershipSave);
     }
 
-    this.viewSchema = fulcrum.args.msSchemaViews || DEFAULT_SCHEMA;
-    this.dataSchema = fulcrum.args.msSchema || DEFAULT_SCHEMA;
+    this.viewSchema = fulcrum.args.mssqlSchemaViews || DEFAULT_SCHEMA;
+    this.dataSchema = fulcrum.args.mssqlSchema || DEFAULT_SCHEMA;
 
     // Fetch all the existing tables on startup. This allows us to special case the
     // creation of new tables even when the form isn't version 1. If the table doesn't
@@ -497,7 +507,7 @@ ${ ex.stack }
   }
 
   setupOptions() {
-    this.baseMediaURL = fulcrum.args.msMediaBaseUrl ? fulcrum.args.msMediaBaseUrl : 'https://api.fulcrumapp.com/api/v2';
+    this.baseMediaURL = fulcrum.args.mssqlMediaBaseUrl ? fulcrum.args.mssqlMediaBaseUrl : 'https://api.fulcrumapp.com/api/v2';
 
     this.recordValueOptions = {
       schema: this.dataSchema,
@@ -506,7 +516,7 @@ ${ ex.stack }
 
       disableComplexTypes: this.disableComplexTypes,
 
-      valuesTransformer: this.msCustomModule && this.msCustomModule.valuesTransformer,
+      valuesTransformer: this.mssqlCustomModule && this.mssqlCustomModule.valuesTransformer,
 
       mediaURLFormatter: (mediaValue) => {
 
@@ -538,9 +548,9 @@ ${ ex.stack }
       }
     };
 
-    if (fulcrum.args.msReportBaseUrl) {
+    if (fulcrum.args.mssqlReportBaseUrl) {
       this.recordValueOptions.reportURLFormatter = (feature) => {
-        return `${ fulcrum.args.msReportBaseUrl }/reports/${ feature.id }.pdf`;
+        return `${ fulcrum.args.mssqlReportBaseUrl }/reports/${ feature.id }.pdf`;
       };
     }
   }
@@ -550,7 +560,7 @@ ${ ex.stack }
       await this.rebuildForm(record.form, account, () => {});
     }
 
-    if (this.msCustomModule && this.msCustomModule.shouldUpdateRecord && !this.msCustomModule.shouldUpdateRecord({record, account})) {
+    if (this.mssqlCustomModule && this.mssqlCustomModule.shouldUpdateRecord && !this.mssqlCustomModule.shouldUpdateRecord({record, account})) {
       return;
     }
 
@@ -580,7 +590,7 @@ ${ ex.stack }
   }
 
   updateForm = async (form, account, oldForm, newForm) => {
-    if (this.msCustomModule && this.msCustomModule.shouldUpdateForm && !this.msCustomModule.shouldUpdateForm({form, account})) {
+    if (this.mssqlCustomModule && this.mssqlCustomModule.shouldUpdateForm && !this.mssqlCustomModule.shouldUpdateForm({form, account})) {
       return;
     }
 
@@ -592,7 +602,7 @@ ${ ex.stack }
       }
 
       const {statements} = await MSSQLSchema.generateSchemaStatements(account, oldForm, newForm, this.disableArrays,
-        false /* disableComplexTypes */, this.msCustomModule, this.dataSchema);
+        false /* disableComplexTypes */, this.mssqlCustomModule, this.dataSchema);
 
       await this.dropFriendlyView(form, null);
 
@@ -645,24 +655,24 @@ ${ ex.stack }
   getFriendlyTableName(form, repeatable) {
     const name = repeatable ? `${form.name} - ${repeatable.dataName}` : form.name;
 
-    return fulcrum.args.msUnderscoreNames ? snake(name) : name;
+    return fulcrum.args.mssqlUnderscoreNames ? snake(name) : name;
   }
 
   async invokeBeforeFunction() {
-    if (fulcrum.args.msBeforeFunction) {
-      await this.run(format('EXECUTE %s;', fulcrum.args.msBeforeFunction));
+    if (fulcrum.args.mssqlBeforeFunction) {
+      await this.run(format('EXECUTE %s;', fulcrum.args.mssqlBeforeFunction));
     }
-    if (this.msCustomModule && this.msCustomModule.beforeSync) {
-      await this.msCustomModule.beforeSync();
+    if (this.mssqlCustomModule && this.mssqlCustomModule.beforeSync) {
+      await this.mssqlCustomModule.beforeSync();
     }
   }
 
   async invokeAfterFunction() {
-    if (fulcrum.args.msAfterFunction) {
-      await this.run(format('EXECUTE %s;', fulcrum.args.msAfterFunction));
+    if (fulcrum.args.mssqlAfterFunction) {
+      await this.run(format('EXECUTE %s;', fulcrum.args.mssqlAfterFunction));
     }
-    if (this.msCustomModule && this.msCustomModule.afterSync) {
-      await this.msCustomModule.afterSync();
+    if (this.mssqlCustomModule && this.mssqlCustomModule.afterSync) {
+      await this.mssqlCustomModule.afterSync();
     }
   }
 
@@ -724,8 +734,15 @@ ${ ex.stack }
     await this.runAll(this.prepareMigrationScript(templateDrop));
   }
 
+  createDatabase(databaseName) {
+    return this.run(`CREATE DATABASE ${databaseName};`);
+  }
+
+  dropDatabase(databaseName) {
+    return this.run(`DROP DATABASE ${databaseName};`);
+  }
+
   async setupDatabase() {
-    // console.log('SCRIPT\n', this.prepareMigrationScript(version001));
     await this.runAll(this.prepareMigrationScript(version001));
   }
 
