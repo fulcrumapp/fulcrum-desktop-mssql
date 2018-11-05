@@ -7,6 +7,7 @@ import snake from 'snake-case';
 import templateDrop from './template.drop.sql';
 import SchemaMap from './schema-map';
 import * as api from 'fulcrum';
+import { compact, difference } from 'lodash';
 
 import version001 from './version-001.sql';
 import version002 from './version-002.sql';
@@ -104,7 +105,7 @@ export default class {
           desc: 'use underscore names (e.g. "Park Inspections" becomes "park_inspections")',
           required: false,
           type: 'boolean',
-          default: false
+          default: true
         },
         mssqlRebuildViewsOnly: {
           desc: 'only rebuild the views',
@@ -196,8 +197,12 @@ export default class {
     }
   }
 
+  trimIdentifier(identifier) {
+    return identifier.substring(0, MAX_IDENTIFIER_LENGTH);
+  }
+
   escapeIdentifier(identifier) {
-    return identifier && this.mssql.ident(identifier.substring(0, MAX_IDENTIFIER_LENGTH));
+    return identifier && this.mssql.ident(this.trimIdentifier(identifier));
   }
 
   get useSyncEvents() {
@@ -322,6 +327,7 @@ export default class {
   }
 
   onSyncFinish = async ({account}) => {
+    await this.cleanupFriendlyViews(account);
     await this.invokeAfterFunction();
   }
 
@@ -456,6 +462,12 @@ export default class {
     const rows = await this.run(`SELECT table_name AS name FROM information_schema.tables WHERE table_schema='${ this.dataSchema }'`);
 
     this.tableNames = rows.map(o => o.name);
+  }
+
+  reloadViewList = async () => {
+    const rows = await this.run(`SELECT table_name AS name FROM information_schema.tables WHERE table_schema='${ this.viewSchema }'`);
+
+    this.viewNames = rows.map(o => o.name);
   }
 
   baseMediaURL = () => {
@@ -653,9 +665,13 @@ ${ ex.stack }
   }
 
   getFriendlyTableName(form, repeatable) {
-    const name = repeatable ? `${form.name} - ${repeatable.dataName}` : form.name;
+    const name = compact([form.name, repeatable && repeatable.dataName]).join(' - ')
 
-    return fulcrum.args.mssqlUnderscoreNames ? snake(name) : name;
+    const prefix = compact(['view', form.rowID, repeatable && repeatable.key]).join(' - ');
+
+    const objectName = [prefix, name].join(' - ');
+
+    return this.trimIdentifier(fulcrum.args.mssqlUnderscoreNames ? snake(objectName) : objectName);
   }
 
   async invokeBeforeFunction() {
@@ -693,6 +709,35 @@ ${ ex.stack }
     });
 
     progress(index);
+  }
+
+  async cleanupFriendlyViews(account) {
+    await this.reloadViewList();
+
+    const activeViewNames = [];
+
+    const forms = await account.findActiveForms({});
+
+    for (const form of forms) {
+      activeViewNames.push(this.getFriendlyTableName(form, null));
+
+      for (const repeatable of form.elementsOfType('Repeatable')) {
+        activeViewNames.push(this.getFriendlyTableName(form, repeatable));
+      }
+    }
+
+    const remove = difference(this.viewNames, activeViewNames);
+
+    for (const viewName of remove) {
+      if (viewName.indexOf('view_') === 0 || viewName.indexOf('view - ') === 0) {
+        try {
+          console.log(format('DROP VIEW IF EXISTS %s.%s;', this.escapeIdentifier(this.viewSchema), this.escapeIdentifier(viewName)));
+          // await this.run(format('DROP VIEW IF EXISTS %s.%s;', this.escapeIdentifier(this.viewSchema), this.escapeIdentifier(viewName)));
+        } catch (ex) {
+          this.integrityWarning(ex);
+        }
+      }
+    }
   }
 
   async rebuildFriendlyViews(form, account) {
