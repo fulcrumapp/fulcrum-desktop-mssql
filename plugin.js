@@ -12,6 +12,7 @@ import { compact, difference } from 'lodash';
 import version001 from './version-001.sql';
 import version002 from './version-002.sql';
 import version003 from './version-003.sql';
+import version004 from './version-004.sql';
 
 const MAX_IDENTIFIER_LENGTH = 100;
 
@@ -25,7 +26,8 @@ const MSSQL_CONFIG = {
 
 const MIGRATIONS = {
   '002': version002,
-  '003': version003
+  '003': version003,
+  '004': version004
 };
 
 const DEFAULT_SCHEMA = 'dbo';
@@ -898,6 +900,7 @@ ${ ex.stack }
 
     await this.maybeRunMigration('002', account);
     await this.maybeRunMigration('003', account);
+    await this.maybeRunMigration('004', account);
   }
 
   async maybeRunMigration(version, account) {
