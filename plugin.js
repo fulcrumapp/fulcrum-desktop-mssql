@@ -645,7 +645,9 @@ ${ ex.stack }
     const viewName = this.getFriendlyTableName(form, repeatable);
 
     try {
-      await this.run(format('DROP VIEW IF EXISTS %s.%s;', this.escapeIdentifier(this.viewSchema), this.escapeIdentifier(viewName)));
+      await this.run(format('IF (EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N\'[%s].[%s]\'))) DROP VIEW [%s].[%s];',
+          this.escapeIdentifier(this.viewSchema), this.escapeIdentifier(viewName),
+          this.escapeIdentifier(this.viewSchema), this.escapeIdentifier(viewName)));
     } catch (ex) {
       this.integrityWarning(ex);
     }
@@ -733,7 +735,9 @@ ${ ex.stack }
     for (const viewName of remove) {
       if (viewName.indexOf('view_') === 0 || viewName.indexOf('view - ') === 0) {
         try {
-          await this.run(format('DROP VIEW IF EXISTS %s.%s;', this.escapeIdentifier(this.viewSchema), this.escapeIdentifier(viewName)));
+          await this.run(format('IF  (EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N\'[%s].[%s]\'))) DROP VIEW [%s].[%s];',
+            this.escapeIdentifier(this.viewSchema), this.escapeIdentifier(viewName),
+            this.escapeIdentifier(this.viewSchema), this.escapeIdentifier(viewName)));
         } catch (ex) {
           this.integrityWarning(ex);
         }
