@@ -299,7 +299,7 @@ CREATE TABLE __SCHEMA__.videos (
   bit_rate float
 );
 
-DROP VIEW IF EXISTS __VIEW_SCHEMA__.audio_view;
+IF EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N\'__VIEW_SCHEMA__.audio_view\')) DROP VIEW __VIEW_SCHEMA__.audio_view;
 
 CREATE VIEW __VIEW_SCHEMA__.audio_view AS
 SELECT
@@ -324,7 +324,8 @@ SELECT
   bit_rate AS bit_rate
 FROM __SCHEMA__.audio;
 
-DROP VIEW IF EXISTS __VIEW_SCHEMA__.changesets_view;
+
+IF  EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N\'__VIEW_SCHEMA__.changesets_view\')) DROP VIEW __VIEW_SCHEMA__.changesets_view;
 
 CREATE VIEW __VIEW_SCHEMA__.changesets_view AS
 SELECT
@@ -349,7 +350,7 @@ SELECT
   bounding_box AS bounding_box
 FROM __SCHEMA__.changesets;
 
-DROP VIEW IF EXISTS __VIEW_SCHEMA__.choice_lists_view;
+IF  EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N\'__VIEW_SCHEMA__.choice_lists_view\')) DROP VIEW __VIEW_SCHEMA__.choice_lists_view;
 
 CREATE VIEW __VIEW_SCHEMA__.choice_lists_view AS
 SELECT
@@ -365,7 +366,7 @@ SELECT
   deleted_at AS deleted_at
 FROM __SCHEMA__.choice_lists;
 
-DROP VIEW IF EXISTS __VIEW_SCHEMA__.classification_sets_view;
+IF  EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N\'__VIEW_SCHEMA__.classification_sets_view\')) DROP VIEW __VIEW_SCHEMA__.classification_sets_view;
 
 CREATE VIEW __VIEW_SCHEMA__.classification_sets_view AS
 SELECT
@@ -381,7 +382,7 @@ SELECT
   deleted_at AS deleted_at
 FROM __SCHEMA__.classification_sets;
 
-DROP VIEW IF EXISTS __VIEW_SCHEMA__.forms_view;
+IF  EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N\'__VIEW_SCHEMA__.forms_view\')) DROP VIEW __VIEW_SCHEMA__.forms_view;
 
 CREATE VIEW __VIEW_SCHEMA__.forms_view AS
 SELECT
@@ -409,7 +410,7 @@ SELECT
   assignment_enabled AS assignment_enabled
 FROM __SCHEMA__.forms;
 
-DROP VIEW IF EXISTS __VIEW_SCHEMA__.memberships_view;
+IF  EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N\'__VIEW_SCHEMA__.memberships_view\')) DROP VIEW __VIEW_SCHEMA__.memberships_view;
 
 CREATE VIEW __VIEW_SCHEMA__.memberships_view AS
 SELECT
@@ -428,7 +429,7 @@ SELECT
 FROM __SCHEMA__.memberships memberships
 LEFT OUTER JOIN __SCHEMA__.roles roles ON memberships.role_resource_id = roles.row_resource_id;
 
-DROP VIEW IF EXISTS __VIEW_SCHEMA__.photos_view;
+IF  EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N\'__VIEW_SCHEMA__.photos_view\')) DROP VIEW __VIEW_SCHEMA__.photos_view;
 
 CREATE VIEW __VIEW_SCHEMA__.photos_view AS
 SELECT
@@ -460,7 +461,7 @@ SELECT
   date_time AS date_time
 FROM __SCHEMA__.photos;
 
-DROP VIEW IF EXISTS __VIEW_SCHEMA__.projects_view;
+IF  EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N\'__VIEW_SCHEMA__.projects_view\')) DROP VIEW __VIEW_SCHEMA__.projects_view;
 
 CREATE VIEW __VIEW_SCHEMA__.projects_view AS
 SELECT
@@ -473,7 +474,7 @@ SELECT
   deleted_at AS deleted_at
 FROM __SCHEMA__.projects;
 
-DROP VIEW IF EXISTS __VIEW_SCHEMA__.roles_view;
+IF  EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N\'__VIEW_SCHEMA__.roles_view\')) DROP VIEW __VIEW_SCHEMA__.roles_view;
 
 CREATE VIEW __VIEW_SCHEMA__.roles_view AS
 SELECT
@@ -507,7 +508,7 @@ SELECT
   can_manage_authorizations AS can_manage_authorizations
 FROM __SCHEMA__.roles;
 
-DROP VIEW IF EXISTS __VIEW_SCHEMA__.signatures_view;
+IF  EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N\'__VIEW_SCHEMA__.signatures_view\')) DROP VIEW __VIEW_SCHEMA__.signatures_view;
 
 CREATE VIEW __VIEW_SCHEMA__.signatures_view AS
 SELECT
@@ -526,7 +527,7 @@ SELECT
   is_processed AS is_processed
 FROM __SCHEMA__.signatures;
 
-DROP VIEW IF EXISTS __VIEW_SCHEMA__.videos_view;
+IF  EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N\'__VIEW_SCHEMA__.videos_view\')) DROP VIEW __VIEW_SCHEMA__.videos_view;
 
 CREATE VIEW __VIEW_SCHEMA__.videos_view AS
 SELECT
