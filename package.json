@@ -10,10 +10,10 @@
   },
   "dependencies": {
     "fulcrum-desktop-plugin": "^1.4.0",
-    "fulcrum-schema": "^2.0.11",
+    "fulcrum-schema": "^2.0.12",
     "mssql": "^4.0.4",
     "snake-case": "^2.1.0",
-    "sqldiff": "^0.0.27",
+    "sqldiff": "^0.0.28",
     "wellknown": "^0.5.0"
   },
   "babel": {

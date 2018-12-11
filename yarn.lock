@@ -1055,12 +1055,12 @@ fulcrum-desktop-plugin@^1.4.0:
     babel-preset-env "^1.4.0"
     babel-preset-stage-0 "^6.24.1"
 
-fulcrum-schema@^2.0.11:
-  version "2.0.11"
-  resolved "https://registry.yarnpkg.com/fulcrum-schema/-/fulcrum-schema-2.0.11.tgz#d3bc1ca7235047acedb9748752d9089f035da9f5"
+fulcrum-schema@^2.0.12:
+  version "2.0.12"
+  resolved "https://registry.yarnpkg.com/fulcrum-schema/-/fulcrum-schema-2.0.12.tgz#e1af35c46972af9e827fce635a25a61c8a7a5d78"
   dependencies:
     babel-polyfill "^6.9.0"
-    sqldiff "^0.0.27"
+    sqldiff "^0.0.28"
     underscore "^1.8.3"
 
 gauge@~2.7.1:
@@ -1736,9 +1736,9 @@ sprintf@0.1.5:
   version "0.1.5"
   resolved "https://registry.yarnpkg.com/sprintf/-/sprintf-0.1.5.tgz#8f83e39a9317c1a502cb7db8050e51c679f6edcf"
 
-sqldiff@^0.0.27:
-  version "0.0.27"
-  resolved "https://registry.yarnpkg.com/sqldiff/-/sqldiff-0.0.27.tgz#9a9980cc560f2e1dccd4c2223bac6ea71ffa8896"
+sqldiff@^0.0.28:
+  version "0.0.28"
+  resolved "https://registry.yarnpkg.com/sqldiff/-/sqldiff-0.0.28.tgz#afab556238d5b3ba8032008748e6fa2eaba751f2"
   dependencies:
     underscore "^1.7.0"
 
