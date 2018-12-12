@@ -1,7 +1,7 @@
 export default `
 BEGIN TRANSACTION;
 
-DROP VIEW IF EXISTS __VIEW_SCHEMA__.records_view;
+IF OBJECT_ID('__VIEW_SCHEMA__.records_view', 'V') IS NOT NULL DROP VIEW __VIEW_SCHEMA__.records_view;
 
 CREATE VIEW __VIEW_SCHEMA__.records_view AS
 SELECT
