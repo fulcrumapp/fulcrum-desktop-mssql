@@ -345,6 +345,31 @@ export default class {
     return results;
   }
 
+  runAllTransaction = async (statements) => {
+    const transaction = new mssql.Transaction(this.pool);
+
+    await transaction.begin();
+
+    try {
+      const results = [];
+
+      for (const sql of statements) {
+        const request = new sql.Request(transaction);
+
+        const result = await request.query(sql);
+
+        results.push(result);
+      }
+
+      await transaction.commit();
+    } catch (ex) {
+      await transaction.rollback();
+      throw ex;
+    }
+
+    return results;
+  }
+
   log = (...args) => {
     // console.log(...args);
   }
@@ -369,6 +394,7 @@ export default class {
   }
 
   onFormSave = async ({form, account, oldForm, newForm}) => {
+    log('form:save', form.id);
     await this.updateForm(form, account, oldForm, newForm);
   }
 
@@ -502,6 +528,7 @@ export default class {
     try {
       await this.run(sql);
     } catch (ex) {
+      warn(`updateObject ${table} failed`);
       this.integrityWarning(ex);
       throw ex;
     }
@@ -668,6 +695,8 @@ ${ ex.stack }
     }
 
     try {
+      log('Updating form', form.id);
+
       await this.updateFormObject(form, account);
 
       if (!this.rootTableExists(form) && newForm != null) {
@@ -687,15 +716,19 @@ ${ ex.stack }
 
       const {statements} = await MSSQLSchema.generateSchemaStatements(account, oldForm, newForm, options);
 
+      log('Dropping views', form.id);
+
       await this.dropFriendlyView(form, null);
 
       for (const repeatable of form.elementsOfType('Repeatable')) {
         await this.dropFriendlyView(form, repeatable);
       }
 
-      await this.runAll(['BEGIN TRANSACTION;',
-                         ...statements,
-                         'COMMIT TRANSACTION;']);
+      log('Running schema statements', form.id, statements.length);
+
+      await this.runAllTransaction(statements);
+
+      log('Creating views', form.id);
 
       if (newForm) {
         await this.createFriendlyView(form, null);
@@ -704,7 +737,10 @@ ${ ex.stack }
           await this.createFriendlyView(form, repeatable);
         }
       }
+
+      log('Completed form update', form.id);
     } catch (ex) {
+      warn('updateForm failed');
       this.integrityWarning(ex);
       throw ex;
     }
@@ -718,6 +754,7 @@ ${ ex.stack }
                             this.escapeIdentifier(this.viewSchema), this.escapeIdentifier(viewName),
                             this.escapeIdentifier(this.viewSchema), this.escapeIdentifier(viewName)));
     } catch (ex) {
+      warn('dropFriendlyView failed');
       this.integrityWarning(ex);
     }
   }
@@ -732,6 +769,7 @@ ${ ex.stack }
                             MSSQLRecordValues.tableNameWithFormAndSchema(form, repeatable, this.recordValueOptions, '_view_full')));
     } catch (ex) {
       // sometimes it doesn't exist
+      warn('createFriendlyView failed');
       this.integrityWarning(ex);
     }
   }
@@ -809,6 +847,7 @@ ${ ex.stack }
                                 this.escapeIdentifier(this.viewSchema), this.escapeIdentifier(viewName),
                                 this.escapeIdentifier(this.viewSchema), this.escapeIdentifier(viewName)));
         } catch (ex) {
+          warn('cleanupFriendlyViews failed');
           this.integrityWarning(ex);
         }
       }
