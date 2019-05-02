@@ -354,7 +354,7 @@ export default class {
       const results = [];
 
       for (const sql of statements) {
-        const request = new sql.Request(transaction);
+        const request = new mssql.Request(transaction);
 
         const result = await request.query(sql);
 
