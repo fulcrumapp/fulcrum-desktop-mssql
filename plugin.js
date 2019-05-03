@@ -352,20 +352,19 @@ export default class {
 
     const results = [];
 
-    try {
-      for (const sql of statements) {
-        const request = new mssql.Request(transaction);
+    for (const sql of statements) {
+      const request = new mssql.Request(transaction);
 
-        const result = await request.query(sql);
-
-        results.push(result);
+      if (fulcrum.args.debug) {
+        log(sql);
       }
 
-      await transaction.commit();
-    } catch (ex) {
-      await transaction.rollback();
-      throw ex;
+      const result = await request.query(sql);
+
+      results.push(result);
     }
+
+    await transaction.commit();
 
     return results;
   }
