@@ -350,9 +350,9 @@ export default class {
 
     await transaction.begin();
 
-    try {
-      const results = [];
+    const results = [];
 
+    try {
       for (const sql of statements) {
         const request = new mssql.Request(transaction);
 
