@@ -38,7 +38,7 @@ const CURRENT_VERSION = 6;
 
 const DEFAULT_SCHEMA = 'dbo';
 
-const { log, warn, error } = fulcrum.logger.withContext('mssql');
+const { log, warn, error, info } = fulcrum.logger.withContext('mssql');
 
 export default class {
   async task(cli) {
@@ -359,7 +359,7 @@ export default class {
         log(sql);
       }
 
-      const result = await request.query(sql);
+      const result = await request.batch(sql);
 
       results.push(result);
     }
@@ -393,7 +393,6 @@ export default class {
   }
 
   onFormSave = async ({form, account, oldForm, newForm}) => {
-    log('form:save', form.id);
     await this.updateForm(form, account, oldForm, newForm);
   }
 
@@ -694,7 +693,7 @@ ${ ex.stack }
     }
 
     try {
-      log('Updating form', form.id);
+      info('Updating form', form.id);
 
       await this.updateFormObject(form, account);
 
@@ -715,7 +714,7 @@ ${ ex.stack }
 
       const {statements} = await MSSQLSchema.generateSchemaStatements(account, oldForm, newForm, options);
 
-      log('Dropping views', form.id);
+      info('Dropping views', form.id);
 
       await this.dropFriendlyView(form, null);
 
@@ -723,11 +722,13 @@ ${ ex.stack }
         await this.dropFriendlyView(form, repeatable);
       }
 
-      log('Running schema statements', form.id, statements.length);
+      info('Running schema statements', form.id, statements.length);
+
+      info('Schema statements', '\n', statements.join('\n'));
 
       await this.runAllTransaction(statements);
 
-      log('Creating views', form.id);
+      info('Creating views', form.id);
 
       if (newForm) {
         await this.createFriendlyView(form, null);
@@ -737,9 +738,9 @@ ${ ex.stack }
         }
       }
 
-      log('Completed form update', form.id);
+      info('Completed form update', form.id);
     } catch (ex) {
-      warn('updateForm failed');
+      info('updateForm failed');
       this.integrityWarning(ex);
       throw ex;
     }
@@ -893,10 +894,12 @@ ${ ex.stack }
   }
 
   createDatabase(databaseName) {
+    log('Creating database', databaseName);
     return this.run(`CREATE DATABASE ${databaseName};`);
   }
 
   dropDatabase(databaseName) {
+    log('Dropping database', databaseName);
     return this.run(`DROP DATABASE ${databaseName};`);
   }
 
@@ -1003,7 +1006,18 @@ ${ ex.stack }
     });
   }
 
+  get isAutomaticInitializationDisabled() {
+    return fulcrum.args.mssqlCreateDatabase ||
+      fulcrum.args.mssqlDropDatabase ||
+      fulcrum.args.mssqlDrop ||
+      fulcrum.args.mssqlSetup;
+  }
+
   async maybeInitialize() {
+    if (this.isAutomaticInitializationDisabled) {
+      return;
+    }
+
     const account = await fulcrum.fetchAccount(fulcrum.args.org);
 
     if (this.tableNames.indexOf('migrations') === -1) {
