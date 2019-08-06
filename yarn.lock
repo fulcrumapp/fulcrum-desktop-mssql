@@ -1742,6 +1742,13 @@ sqldiff@^0.0.30:
   dependencies:
     underscore "^1.7.0"
 
+sqldiff@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/sqldiff/-/sqldiff-0.1.0.tgz#72d13076ed6a0593a91eaf91c0050ec9f30c7b8a"
+  integrity sha512-BlSgPtJwU9hVWHOs6ecgRNylkdnajlaGTpPEKDlqhakKeefKXW9VhGATQv9fs5IKdgkSrVfzkZbY0Mw1vr/EDg==
+  dependencies:
+    underscore "^1.7.0"
+
 sshpk@^1.7.0:
   version "1.13.0"
   resolved "https://registry.yarnpkg.com/sshpk/-/sshpk-1.13.0.tgz#ff2a3e4fd04497555fed97b39a0fd82fafb3a33c"

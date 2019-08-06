@@ -23,7 +23,8 @@ const MSSQL_CONFIG = {
   server: 'localhost',
   port: 1433,
   max: 10,
-  idleTimeoutMillis: 30000
+  idleTimeoutMillis: 30000,
+  requestTimeout: 120000
 };
 
 const MIGRATIONS = {
