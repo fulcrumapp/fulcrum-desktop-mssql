@@ -157,7 +157,13 @@ export default class {
           required: false,
           type: 'boolean',
           default: false
-        }
+        },
+        mssqlSkipFailures: {
+          desc: 'skip failures in rows and tables that are too large',
+          required: false,
+          type: 'boolean',
+          default: false
+        },
       },
       handler: this.runCommand
     });
@@ -665,7 +671,10 @@ ${ ex.stack }
 
     const statements = MSSQLRecordValues.updateForRecordStatements(this.mssql, record, this.recordValueOptions);
 
-    await this.run(statements.map(o => o.sql).join('\n'));
+    await this.runSkippingFailures(
+      `Skipping record ${record.id} in form ${record.form.id}.`,
+      () => this.run(statements.map(o => o.sql).join('\n'))
+    );
 
     const systemValues = MSSQLRecordValues.systemColumnValuesForFeature(record, null, record, this.recordValueOptions);
 
@@ -727,19 +736,24 @@ ${ ex.stack }
 
       info('Schema statements', '\n', statements.join('\n'));
 
-      await this.runAllTransaction(statements);
+      await this.runSkippingFailures(
+        `Skipping form ${form.id}.`,
+        async () => {
+          await this.runAllTransaction(statements);
 
-      info('Creating views', form.id);
-
-      if (newForm) {
-        await this.createFriendlyView(form, null);
-
-        for (const repeatable of form.elementsOfType('Repeatable')) {
-          await this.createFriendlyView(form, repeatable);
+          info('Creating views', form.id);
+    
+          if (newForm) {
+            await this.createFriendlyView(form, null);
+    
+            for (const repeatable of form.elementsOfType('Repeatable')) {
+              await this.createFriendlyView(form, repeatable);
+            }
+          }
+    
+          info('Completed form update', form.id);
         }
-      }
-
-      info('Completed form update', form.id);
+      );
     } catch (ex) {
       info('updateForm failed');
       this.integrityWarning(ex);
@@ -1095,5 +1109,25 @@ ${ ex.stack }
 
   progress = (name, index) => {
     this.updateStatus(name.green + ' : ' + index.toString().red);
+  }
+
+  runSkippingFailures = async (context, block) => {
+    if (!fulcrum.args.mssqlSkipFailures) {
+      return block();
+    }
+
+    try {
+      await block();
+    } catch (ex) {
+      if (ex.message.indexOf('maximum row size of 8060') !== -1) {
+        log('Row too large.', context, ex.message);
+      } else if (ex.message.indexOf('maximum of 1024 columns') !== -1) {
+        log('Table too large.', context, ex.message);
+      } else if (ex.message.indexOf('Invalid object name') !== -1) {
+        log('Invalid object name.', context, ex.message);
+      } else {
+        throw ex;
+      }
+    }
   }
 }
